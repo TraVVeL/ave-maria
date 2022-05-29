@@ -29,11 +29,11 @@ def logout_admin():
 
 
 menu = [
-    {"url": ".user_order", "title": "List orders"},
-    {"url": ".user_issues", "title": "User issue"},
-    {"url": ".products", "title": "List product"},
-    {"url": ".user_list", "title": "List user"},
-    {"url": ".add_product", "title": "Add product"},
+    {"url": ".user_order", "title": "Order"},
+    {"url": ".user_issues", "title": "Issues"},
+    {"url": ".user_list", "title": "Users"},
+    {"url": ".products", "title": "Products"},
+    {"url": ".add_product", "title": "Add+"},
     {"url": ".logout", "title": "Logout"}
 ]
 
@@ -124,12 +124,12 @@ def products():
             print("Error script getting data from DB'\n'error comes from admin.py | products " + str(e))
 
     return render_template("admin/list_product.html",
-                           title="КОЛЛЕКЦИЯ",
+                           title="A LIST OF PRODUCTS",
                            menu=menu,
                            product=product)
 
 
-@admin.route("/user-list", methods=["POST", "GET"])
+@admin.route("/users", methods=["POST", "GET"])
 def user_list():
     if not is_logged():
         return redirect(url_for('.login'))
@@ -228,7 +228,7 @@ def add_product():
     return render_template('admin/add_product.html', title="Product addition", menu=menu)
 
 
-@admin.route("/user_issues", methods=["POST", "GET"])
+@admin.route("/issues", methods=["POST", "GET"])
 def user_issues():
     if not is_logged():
         return redirect(url_for('.login'))
@@ -288,7 +288,7 @@ def user_issues():
                            get_information=get_information)
 
 
-@admin.route("/user_order", methods=["POST", "GET"])
+@admin.route("/orders", methods=["POST", "GET"])
 def user_order():
     if not is_logged():
         return redirect(url_for('.login'))
