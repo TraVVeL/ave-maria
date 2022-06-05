@@ -2,11 +2,14 @@ from flask import Flask, render_template, request, flash, redirect, url_for, g, 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from FDataBase import FDataBase
 from UserLogin import UserLogin
-from forms import LoginForm
+from forms import LoginForm, RegisterForm
 from admin.admin import admin
 import os
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
+import itertools
+import re
+
 
 DATABASE = '/tmp/siteData.db'
 UPLOAD_FOLDER = 'static/images/productImg'
@@ -17,7 +20,15 @@ app.config.update(dict(DATABASE=os.path.join(app.root_path, 'siteData.db')))
 app.config['SECRET_KEY'] = b'\x87\xd0\xb3\x11\xd4\xea\xd7#\x89\x0f\x06\xedd\x94H\xf8'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024
+app.jinja_env.filters['zip'] = zip
+
+# If a user tries to visit a page that is required registration, it will be redirected to login
 login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message = "Войдите или зарегистрируйтесь что бы получить доступ к профилю"
+login_manager.login_message_category = "success"
+
+
 dbase = None
 DEBUG = True
 app.register_blueprint(admin, url_prefix='/admin')
@@ -74,10 +85,37 @@ def check_authenticated(name):
         name = ['Профиль', 'Выйти', 'profile', 'logout']
         return name
     else:
-        return ['Войти', '', 'login', 'login']
+        return ['Войти', 'Регистрация', 'login', 'register']
+
+
+def autofill():
+    if current_user.get_id() is not None:
+        return current_user.get_id()
+    else:
+        return ''
 
 
 # all data use like request.form where default values is dash(-)
+order_data = {
+    'user_id': '-',
+    'customer': '-',
+    'phone': '-',
+    'mail': '-',
+    'receiver': '-',
+    'receiver_phone': '-',
+    'city': '-',
+    'street': '-',
+    'building_address': '-',
+    'entrance': '-',
+    'floor': '-',
+    'apartment': '-',
+    'deliver': '-',
+    'deliver_time': '-',
+    'note': '-',
+    'delivered': 'processing',
+    'product_id': '-',
+    'product_count': '-'
+}
 data_details = {
     'phone': '-',
     'email': '-',
@@ -88,111 +126,85 @@ data_details = {
     'price': '-',
     'viewed': 'viewed-false'}
 
-order_data = {
-    'user_id': '-',
-    'product_id': '-',
-    'product_count': '-',
-    'name': '-',
-    'phone': '-',
-    'mail': '-',
-    'secondary_name': '-',
-    'secondary_phone': '-',
-    'city': '-',
-    'street': '-',
-    'building_address': '-',
-    'entrance': '-',
-    'floor': '-',
-    'apartment': '-',
-    'deliver': '-',
-    'deliver_time': '-',
-    'note': '-',
-    'delivered': 'processing'
-}
 
 # list using to put 1 of 3 variables to class \\ default class name is flash
 subcategory = ['flash', 'flash success', 'flash error']
 
 
+
+
 @app.route('/')
 def index():
+    user_id = current_user.get_id()
     return render_template('index.html',
                            products=dbase.get_products_announce(),
-                           check_authenticated=check_authenticated)
-
-
-@app.route('/state')
-def state():
-    db = get_db()
-    dbase = FDataBase
-    return render_template('state.html', menu=dbase.getMenu())
+                           check_authenticated=check_authenticated,
+                           autofill=dbase.get_autofill(user_id))
 
 
 @app.route('/services')
 def service():
-    return render_template('services.html', check_authenticated=check_authenticated)
+    user_id = current_user.get_id()
+    return render_template('services.html',
+                           check_authenticated=check_authenticated,
+                           autofill=dbase.get_autofill(user_id))
 
 
 @app.route('/product')
 def product():
+    user_id = current_user.get_id()
     return render_template('product.html',
                            products=dbase.get_products_announce(),
                            check_authenticated=check_authenticated,
+                           autofill=dbase.get_autofill(user_id),
                            title="НАША КОЛЛЕКЦИЯ")
 
 
 @app.route('/about')
 def about():
-    return render_template('about.html', check_authenticated=check_authenticated)
+    user_id = current_user.get_id()
+    return render_template('about.html',
+                           check_authenticated=check_authenticated,
+                           autofill=dbase.get_autofill(user_id))
 
 
 @app.route('/contact')
 def contact():
-    return render_template('contact.html', check_authenticated=check_authenticated)
+    user_id = current_user.get_id()
+    return render_template('contact.html',
+                           check_authenticated=check_authenticated,
+                           autofill=dbase.get_autofill(user_id))
 
 
 @app.route('/login', methods=["POST", "GET"])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('profile'))
-    form = LoginForm
-    errors = ''
-
-    if request.method == "POST":
-        user = dbase.get_user_by_email(request.form['email'])
-
-        if user and check_password_hash(user['password'], request.form['password']):
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = dbase.get_user_by_email(form.email.data)
+        if user and check_password_hash(user['password'], form.password.data):
             user_login = UserLogin().create(user)
-            rm = True if request.form.get('remindme') else False
+            rm = form.remindme.data
             login_user(user_login, remember=rm)
-            return redirect(url_for('profile'))
-
-        if user is False and request.form['email'] != 'Логин':
-            errors += 'Логин имеет неправильный характер'
-        if user and check_password_hash(user['password'], request.form['password']) is False:
-            errors += 'Пароль имеет неправильный характер'
-        if request.form['email'] == 'Логин' or request.form['password'] == 'Пароль':
-            errors = 'Вы указали пустое поле ввода  '
-
-        flash(errors, category='error')
-
+            return redirect(url_for('index'))
+        flash("Неверная пара логин/пароль")
     return render_template("login.html", check_authenticated=check_authenticated, form=form)
 
 
 @app.route('/register', methods=["POST", "GET"])
 def register():
-    if request.method == "POST":
-        if len(request.form["password"]) > 5 and request.form["password"] == request.form["password1"]:
-            hash = generate_password_hash(request.form["password"])
-            res = dbase.add_user(request.form["name"], request.form["email"], hash, 1000, 'пусто')
-            if res:
-                flash('Успешная регистрация', category='success')
-                return redirect(url_for('login'))
-            else:
-                flash('error type', category='error')
+    form = RegisterForm()
+    if form.validate_on_submit():
+        hash = generate_password_hash(form.password.data)
+        res = dbase.add_user(form.name.data, form.email.data, hash, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-')
+        if res:
+            flash('Успешная регистрация', category='success')
+            return redirect(url_for('login'))
         else:
-            flash('password or name error', category='error')
+            flash('Ошибка сторона сервера не отвечает', category='error')
 
-    return render_template('register.html')
+    return render_template('register.html', form=form)
 
 
 @app.route('/logout')
@@ -207,16 +219,18 @@ def logout():
 @login_required
 def profile():
     user_id = current_user.get_id()
-    user = [current_user.get_id(), current_user.get_name(), current_user.get_cash(), current_user.get_cart()]
+    user = [current_user.get_id(), current_user.get_name()]
     return render_template('profile.html',
                            user=user,
                            get_user_order=dbase.get_user_order(user_id),
                            products=dbase.get_products_announce(),
-                           check_authenticated=check_authenticated)
+                           check_authenticated=check_authenticated,
+                           autofill=dbase.get_autofill(user_id))
 
 
 @app.route("/product/<alias>", methods=["POST", "GET"])
 def show_product(alias):
+    user_id = current_user.get_id()
     id, name, description, quick_describe, weight, amount, price, imgname = dbase.get_product(alias)
     result_amount = ''
     for i in amount:
@@ -252,13 +266,37 @@ def show_product(alias):
                            products=dbase.get_products_announce(),
                            result_amount=result_amount,
                            name=name,
-                           )
+                           autofill=dbase.get_autofill(user_id),
+                           check_authenticated=check_authenticated)
 
 
 @app.route("/agreement")
 def agreement():
-    return render_template("agreement.html")
+    return render_template("agreement.html",
+                           check_authenticated=check_authenticated)
 
+
+@app.route('/registration', methods=['POST'])
+def registration():
+    error_handler = ["Ошибка регистрации"]
+    data_get = request.form.to_dict(flat=True)
+    if len(request.form["password"]) < 7:
+        error_handler.append('Пароль не имеет достаточно символов')
+        if request.form["password"] == request.form["password1"]:
+            print("nice")
+    # if len(request.form["password"]) > 5 and request.form["password"] == request.form["password1"]:
+    #     hash = generate_password_hash(request.form["password"])
+    #     res = dbase.add_user(request.form["name"], request.form["email"], hash, 1000, 'пусто')
+    #     if res:
+    #         flash('Успешная регистрация', category='success')
+    #         return redirect(url_for('login'))
+    #     else:
+    #         flash('error type', category='error')
+    # else:
+    #     flash('password or name error', category='error')
+
+
+    return jsonify({'category': subcategory[2]})
 
 # Checking the information to add to the database from @app.route index
 # Processing the data we get
@@ -275,7 +313,7 @@ def render_user_issue():
         if len(data_get[i]) > 0:
             data_details[i] = data_get[i]
     # trying to send user data\\ if res not response than res will return false
-    res = dbase.add_information(*tuple(i for i in data_details.values()))
+    res = dbase.add_information(*tuple(str(i) for i in data_details.values()))
     if res:
         return jsonify({'category': subcategory[1], 'content': message[1]})
 
@@ -284,20 +322,29 @@ def render_user_issue():
 
 @app.route('/user_purchase', methods=["POST", "GET"])
 def user_purchase():
-    message = ['Что-то пошло не так, повторите попытку', 'Заказ принят']
-    data_get = request.form.to_dict(flat=True)
-    user_id = {'user_id': current_user.get_id()}
-    data_get = user_id | data_get
+    message = ['Что-то пошло не так, повторите попытку', 'Заказ принят', 'Возможно, Вы указали неверный телефон']
+    data_get = {'user_id': current_user.get_id()} | request.form.to_dict(flat=True)
+    match = bool(re.search(r'^\+?[78][-\(]?\d{3}\)?-?\d{3}-?\d{2}-?\d{2}$', data_get.get('phone')))
+    if match is True:
+        if data_get:
+            for i in data_get.keys():
 
-    if data_get:
-        for i in data_get.keys():
-            # if length of data is less than 1 order_data element will get dash symbol(-)
-            if data_get[i] is not None and len(data_get[i]) > 0:
-                order_data[i] = data_get[i]
+                # if length of data is less than 1 order_data element will get dash symbol(-)
+                if data_get[i] is not None and len(data_get[i]) > 0:
+                    order_data[i] = data_get[i]
             # trying to send user data\\ if res not response than res will return false
-        res = dbase.user_order(*tuple(i for i in order_data.values()))
-        if res:
+            order_slice = dict(itertools.islice(order_data.items(), 18))
+            res = dbase.user_order(*tuple(i for i in order_slice.values()))
+            if res:
+                if data_get.get('saveData') == 'true' and data_get.get('user_id') != 'None':
+                    # slice the dict to left only 12 values
+                    autofill_slice = dict(itertools.islice(order_data.items(), 12))
+                    res1 = dbase.user_autofill(*tuple(i for i in autofill_slice.values()))
+                    if res and res1:
+                        return jsonify({'category': subcategory[1], 'content': message[1]})
             return jsonify({'category': subcategory[1], 'content': message[1]})
+    else:
+        return jsonify({'category': subcategory[2], 'content': message[2]})
     return jsonify({'category': subcategory[2], 'content': message[0]})
 
 
@@ -306,6 +353,11 @@ def page_not_found(error):
     return render_template("error.html",
                            products=dbase.get_products_announce(),
                            check_authenticated=check_authenticated)
+
+
+@app.route("/base")
+def base():
+    return render_template("base.html", user=current_user.get_id())
 
 
 @app.route("/icons")

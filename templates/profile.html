@@ -1,41 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 {{ super() }}
-<div class="box-wrap">
-	<header role="banner" id="fh5co-header">
-		<div class="container">
-			<nav class="navbar navbar-default">
-				<div class="row">
-					<div class="col-md-3">
-						<div class="fh5co-navbar-brand">
-							<a class="fh5co-logo" href="/">Ave Maria</a>
-						</div>
-					</div>
-					<div class="col-md-9 main-nav">
-						<ul class="nav text-right">
-							<li><a href="/"><span>Главная</span></a></li>
-							<li><a href="/services">Обслуживание</a></li>
-							<li><a href="/product">Продукция</a></li>
-							<li><a href="/about">О нас</a></li>
-							<li><a href="/contact">связь</a></li>
-							<li  class="active">
-								<a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-							    {{ check_authenticated(name)[0] }}
-								</a>
-							</li>
-							<div class="collapse" id="collapseExample">
-							  <div class="card card-body">
-								<p><a href="{{check_authenticated(name)[-2]}}">{{check_authenticated(name)[0]}}</a>
-								<p><a href="{{check_authenticated(name)[-1]}}">{{check_authenticated(name)[1]}}</a>
-							  </div>
-							</div>								
-						</ul>
-					</div>
-				</div>
-			</nav>
-	  </div>
-	</header>
-</div>
+
 
 <div class="container size">
 
@@ -43,31 +9,77 @@
 <h1> ВАШИ ЗАКАЗЫ </h1>
 {% for i in range(get_user_order | length) %}
 
-<div class="cart-ordered animate-box">
-	
+{% set order_id, order_count, sum_of = get_user_order[i][2].split(), get_user_order[i][3].split(), [] %}
+
+{% for id, count in order_id|zip(order_count) %}
+<div class="hide">{{sum_of.append(products[id|int][6]|int * count|int)}}</div>
+{% endfor%}
+
+<div>
+	<i class="extremum-click icon-arrow-right"></i>
+
+
 	<div class="cart-top">
-	<p>Заказ: {{get_user_order[i][19]}}</p>
+		<p>Заказ: {{get_user_order[i][19]}}</p>
 			<div class="toggle-status">
-				<div>Статус: <span class="order-status {{get_user_order[i][18]}}">{{get_user_order[i][18]}}</span></div>
-				<div class="el-info"><p>Итого: <span>{{get_user_order[i][3] | int * products[get_user_order[i][2] | int][6] | int}}p.</span></p></div>
+				<div>Статус: 
+					<span class="order-status {{get_user_order[i][18]}}">{{get_user_order[i][18]}}
+					</span>
+				</div>
+
+				<div class="el-info">
+					<p>Итого: 
+						<span>
+							{{ sum_of|sum }}р.
+						</span>
+					</p>
+				</div>
 			</div>
 	</div>
-	<div class="el-ordered">
-		<a href="product\{{products[get_user_order[i][2] | int][7]}}"><img src="\static\images\productImg\{{products[get_user_order[i][2] | int][8]}}" style="width: 100px; height: 100px; border-radius: 2px;"></a>
-	<div class="card-weight">
-	<div><a class="url_name" href="product\{{products[get_user_order[i][2] | int][7]}}">{{products[get_user_order[i][2] | int][1]}}</a></div>
-		<div>Телефон получателя: {{get_user_order[i][5]}}</div>
-	</div>
-	<div class="el-info">
-		<p>Цена: <span>{{products[get_user_order[i][2] | int][6]}}p.</span></p>
-		<p><span>{{get_user_order[i][3]}} <span class="el-unit">шт. x</span> {{products[get_user_order[i][2] | int][6]}}р.</span></p>
-	</div>
-	</div>
+
+	<div class="extremum-slide">
 
 
+	{% for id, count in order_id|zip(order_count) %}
+	<div class="cart-ordered">
+
+		<div class="el-ordered">
+			<a href="product\{{products[id | int][7]}}">
+				<img src="\static\images\productImg\{{products[id | int][8]}}" style="width: 100px; height: 100px; border-radius: 2px;">
+			</a>
+
+			<div class="card-weight">
+				<div>
+					<a class="url_name" href="product\{{products[id | int][7]}}">
+						{{products[id | int][1]}}
+					</a>
+				</div>
+				<div>
+					Телефон получателя: {{get_user_order[i][5]}}
+				</div>
+			</div>
+
+			<div class="el-info">
+				<p>Цена: 
+					<span>
+					{{(products[id | int][6] | int) * (count | int)}}p.
+					</span>
+				</p>
+				<p>
+					<span>
+						{{ count }} 
+						<span class="el-unit">шт. x
+						</span> 
+						{{products[id | int][6]}}р.
+					</span></p>
+			</div>
+
+		</div>
+
+	</div>
+	{% endfor %}
+	</div>
 </div>
-
-{% else %}
 
 {% endfor %}
 
@@ -79,4 +91,16 @@
 	</div>
 {% endif %}
 </div>
+
+<script>
+	$(".extremum-click").click(function () {
+      $(this).siblings(".extremum-slide").slideToggle("slow");
+    });
+    $(document).ready(function(){
+	$('.extremum-click').click(function () {
+		$(this).toggleClass('icon-arrow-down');
+
+		});
+	});
+</script>
 {% endblock %}

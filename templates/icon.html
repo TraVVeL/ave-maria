@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+{{ super() }}
+
+{% for i in icons %}
+
+	<div><i class="{{i}}"></i></div>
+
+{% endfor%}
+
+{% endblock %}

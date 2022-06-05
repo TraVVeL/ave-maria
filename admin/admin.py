@@ -55,9 +55,9 @@ def teardown_request(request):
 @admin.route("/")
 def index():
     if not is_logged():
-        return redirect((url_for(".index")))
+        return redirect((url_for(".user_order")))
 
-    return render_template("admin/index.html", menu=menu, title="Admin panel")
+    return render_template("admin/list_order.html", menu=menu, title="Admin panel")
 
 
 @admin.route("/login", methods=["POST", "GET"])
@@ -239,6 +239,7 @@ def user_issues():
             selected_checkbox_user = (tuple(i for i in request.form.getlist("checkbox_value_issues")))
             query = "UPDATE contact SET viewed='viewed-true' " \
                     "WHERE id IN ({})".format(", ".join("?" * len(selected_checkbox_user)))
+            print(query)
             if db:
                 try:
                     cur = db.cursor()

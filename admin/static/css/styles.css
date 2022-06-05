@@ -347,7 +347,6 @@ ul.list-posts .annonce {
 input[type="text"] {
   height: 60px;
   width: 300px;
-  border: 2px solid;
   outline: none;
   background: #e0f2f7;
 }
@@ -558,4 +557,8 @@ label {
 	background: #77777777;
 	text-decoration-line: line-through;
 	color: #77777777;
+}
+
+.field {
+	border: 1px solid rgba(59, 65, 72, 1);
 }

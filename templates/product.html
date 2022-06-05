@@ -1,41 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 {{ super() }}
-<div class="box-wrap">
-    <header role="banner" id="fh5co-header">
-        <div class="container">
-            <nav class="navbar navbar-default">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="fh5co-navbar-brand">
-                            <a class="fh5co-logo" href="/">Ave Maria</a>
-                        </div>
-                    </div>
-                    <div class="col-md-9 main-nav">
-                        <ul class="nav text-right">
-                            <li><a href="/"><span>Главная</span></a></li>
-                            <li><a href="/services">Обслуживание</a></li>
-                            <li class="active"><a href="/product">Продукция</a></li>
-                            <li><a href="/about">о нас</a></li>
-                            <li><a href="/contact">связь</a></li>
-                            <li>
-                                <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                                {{ check_authenticated(name)[0] }}
-                                </a>
-                            </li>
-                            <div class="collapse" id="collapseExample">
-                                <div class="card card-body">
-                                <p><a href="{{check_authenticated(name)[-2]}}">{{check_authenticated(name)[0]}}</a>
-                                <p><a href="{{check_authenticated(name)[-1]}}">{{check_authenticated(name)[1]}}</a>
-                                </div>
-                            </div>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </div>
-    </header>
-</div>
 
 <div class="product-content">
 
@@ -58,8 +23,6 @@
                 <button type="submit" class="btn-more-info">Подробнее</button>
             </div>
         </form>
-
-        <input type="hidden" id="user_id" value="{{ current_user.get_id() }}">
         <button class="btn-add-to-cart addToCart" data-product-id="{{p}}">Купить</button>
     </div>
 </div>

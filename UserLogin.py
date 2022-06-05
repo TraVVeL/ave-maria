@@ -19,10 +19,10 @@ class UserLogin(UserMixin):
     def get_mail(self):
         return str(self.__user['email'])
 
-    def get_cash(self):
-        return str(self.__user['cash'])
+    # def get_cash(self):
+    #     return str(self.__user['cash'])
 
-    def get_cart(self):
-        return str(self.__user['cart'])
+    # def get_cart(self):
+    #     return str(self.__user['cart'])
 
 

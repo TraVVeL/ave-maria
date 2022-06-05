@@ -1,10 +1,16 @@
 <!DOCTYPE html>
+
 <html xmlns="http://www.w3.org/1999/html">
 <head>
 <html class="no-js">
 <title>Ave Maria &mdash; Букеты для всех</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="keywords" content="flower, ave-maria, цветочный, магазин, цветы, цветов">
+
+<meta name="author" content="TraVVeL">
+
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
 <link rel="icon" href="/static/images/logo.png" type="image-x-icon">
@@ -25,17 +31,122 @@
 <link rel="stylesheet" href="/static/css/owl.carousel.min.css">
 <link rel="stylesheet" href="/static/css/owl.theme.default.min.css">
 
+<!-- air datatime picker calendar -->
+<link rel="stylesheet" href="/static/css/air-datepicker.css">
+
 <!-- css style -->
 <link type="text/css" href="{{ url_for('static', filename='css/style.css')}}" rel="stylesheet">
+
 </head>
 
 <body>
 
 {% block content -%}
-
 <div id="content">
+{% if request.path.split('/')|length <= 2 %}
+<div class="box-wrap">
+    <header role="banner" id="fh5co-header">
+        <div class="container">
+            <nav class="navbar navbar-default">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="fh5co-navbar-brand">
+                            <a class="fh5co-logo" href="/">Ave Maria</a>
+                        </div>
+                    </div>
+                    <div class="col-md-9 main-nav">
+                        <ul class="nav text-right">
+                            {% if request.path == '/' %}
+                                <li class="active" id="index"><a href="/"><span>Главная</span></a></li>
+                            {% else %}
+                                <li id="index"><a href="/"><span>Главная</span></a></li>
+                            {% endif %}
 
-<div class="cart-shopping shoppingCartButton fadeIn animated">
+                            {% if request.path == '/services' %}
+                                <li class="active" id="services" ><a href="/services">Обслуживание</a></li>
+                            {% else %}
+                                <li id="services" ><a href="/services">Обслуживание</a></li>
+                            {% endif %}
+
+
+                            {% if request.path == '/product' %}
+                                <li class="active" id="product"><a href="/product">Продукция</a></li>
+                            {% else %}
+                                <li id="product"><a href="/product">Продукция</a></li>
+                            {% endif %}
+
+
+                            {% if request.path == '/about' %}
+                                <li class="active" id="about"><a href="/about">О нас</a></li>
+                            {% else %}
+                                <li id="about"><a href="/about">О нас</a></li>
+                            {% endif %}
+
+                            {% if request.path == '/contact' %}
+                                <li class="active" id="contact"><a href="/contact">связь</a></li>
+                            {% else %}
+                                <li id="contact"><a href="/contact">связь</a></li>
+                            {% endif %}
+            
+
+                            <li>
+                                <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="true" aria-controls="collapseExample">
+                                    <i class="icon-menu3" style="font-size: 20px"></i>
+                                </a>
+                            </li>
+
+                            <div class="collapse" id="collapseExample">
+                                <div class="card card-body">
+                                <p><a href="{{check_authenticated(name)[-2]}}">{{check_authenticated(name)[0]}}</a>
+                                <p><a href="{{check_authenticated(name)[-1]}}">{{check_authenticated(name)[1]}}</a>
+                                </div>
+                            </div>                          
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+      </div>
+    </header>
+</div>
+{% else %}
+{% endif %}
+
+            
+<!-- доработать вход -->
+<!-- <form id="registration" method="POST">
+        <div class="modal fade" id="ModalRegistration" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+             <div class="modal-dialog" role="document">
+               <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="ModalLabel">Регистрация</h2>
+                </div>
+
+                <div class="modal-body">
+                    <fieldset class="clearfix">
+
+                    <p><span class="fontawesome-user"></span>
+                        <input type="text" id="name" required></p> 
+                    <p><span class="fontawesome-user"></span>
+                        <input type="text" id="email" required></p>
+                    <p><span class="fontawesome-lock"></span>
+                        <input type="password" id="password" required></p>
+                    <p><span class="fontawesome-lock"></span>
+                        <input type="password" class="input-more-info" id="password1" required></p>
+                    
+                    </fieldset>
+                 <div class="modal-footer">
+                   <p><button type="submit" id="registration" class="btn btn-secondary">ЗАРЕГИСТРИРОВАТЬСЯ</button></p>
+                 </div>
+                 </div>
+               </div>
+             </div>  
+        </div>
+</form> -->
+<!-- <div class="">
+    <button type="button" class="btn-primary" data-toggle="modal" data-target="#ModalRegistration">Подробнее</button>
+</div> -->
+
+<div id="mydiv" class="cart-shopping shoppingCartButton fadeIn animated">
     <div type="checkbox" class="shoppingCartButton">
         <img src=/static/images/cart.png>
     </div>
@@ -43,7 +154,6 @@
         <p id="quantity"></p>
     </div>
 </div>
-
 <nav>
 	<div class="overlay hide"></div>
 
@@ -67,27 +177,90 @@
                     <div class="modal-header header">
                         <h2 class="modal-title title" id="modal_order_label">Ваш заказ</h2>
 
-                        <p><input type="text" class="input-more-info" id="name" placeholder="Имя*" required></p>          
-                        <p><input type="text" class="input-more-info" id="phone" placeholder="Ваш телефон*" required></p>
-                        <p><input type="text" class="input-more-info" id="mail" placeholder="Почта*" required></p>
+
+                        {% if autofill.customer != "-" %}
+                            <p><input type="text" class="input-more-info" id="customer" value="{{ autofill.customer }}" placeholder="Имя*" ></p> 
+                        {% else %}
+                            <p><input type="text" class="input-more-info" id="customer" placeholder="Имя*" ></p> 
+                        {% endif %}
+
+
+                        {% if autofill.phone != "-" %}
+                            <p><input type="tel" class="input-more-info" id="phone" value="{{ autofill.phone }}" placeholder="+7-345-555-11-99" required></p>
+                        {% else %}
+                            <p><input type="tel" class="input-more-info" id="phone" required></p>
+                        {% endif %}
+
+
+                        {% if autofill.mail != "-" %}
+                            <p><input type="text" class="input-more-info" id="mail" value="{{ autofill.mail }}" placeholder="Почта*" ></p>
+                        {% else %}
+                            <p><input type="text" class="input-more-info" id="mail" placeholder="Почта*" ></p>
+                        {% endif %}
+
 
                         <h2 class="modal-title title" id="modal_order_label">Доставка</h2>
-
-
                         <h4>Получатель (Имя)</h4>
-                        <p><input type="text" class="input-more-info" id="secondary_name" placeholder="Кому предназначен букет"></p>
+                        {% if autofill.receiver != "-" %}    
+                        <p><input type="text" class="input-more-info" id="receiver" value="{{ autofill.receiver }}" placeholder="Кому предназначен букет" ></p>
+                        {% else %}
+                            <p><input type="text" class="input-more-info" id="receiver" placeholder="Кому предназначен букет"></p>
+                        {% endif %}
+
+
                         <h4>Номер телефона получателя</h4>
-                        <p><input type="text" class="input-more-info" id="secondary_phone" placeholder="+7 999 000 00 00"></p>
+                        {% if autofill.receiver_phone != "-" %}
+                            <p><input type="text" class="input-more-info" id="receiver_phone" value="{{ autofill.receiver_phone }}" placeholder="+7 999 000 00 00" ></p>
+                        {% else %}
+                            <p><input type="text" class="input-more-info" id="receiver_phone" placeholder="+7 999 000 00 00"></p>
+                        {% endif %}
+
 
                         <h4>Адрес</h4>
-                        <p><input type="text" class="input-more-info" id="city" placeholder="Город*" required></p>
-                        <p><input type="text" class="input-more-info" id="street" placeholder="Улица*" required></p>
-                        <p><input type="text" class="input-more-info" id="building_address" placeholder="Дом*" required></p>
-                        <p><input type="text" class="input-more-info" id="entrance" placeholder="Подъезд*" required></p>
-                        <p><input type="text" class="input-more-info" id="floor" placeholder="Этаж"></p>
-                        <p><input type="text" class="input-more-info" id="apartment" placeholder="Квартира"></p>
+                        {% if autofill.city != "-" %}
+                            <p><input type="text" class="input-more-info" id="city" value="{{ autofill.city }}" placeholder="Город*" ></p>
+                        {% else %}
+                            <p><input type="text" class="input-more-info" id="city" placeholder="Город*" ></p>
+                        {% endif %}
+
+
+                        {% if autofill.street != "-" %}
+                            <p><input type="text" class="input-more-info" id="street" value="{{ autofill.street }}" placeholder="Улица*" ></p>
+                        {% else %}
+                            <p><input type="text" class="input-more-info" id="street" placeholder="Улица*" ></p>
+                        {% endif %}
+
+
+                        {% if autofill.building_address != "-" %}
+                            <p><input type="text" class="input-more-info" id="building_address" value="{{ autofill.building_address }}" placeholder="Дом*" ></p>
+                        {% else %}
+                            <p><input type="text" class="input-more-info" id="building_address" placeholder="Дом*" ></p>
+                        {% endif %}
+
+
+                        {% if autofill.entrance != "-" %}
+                            <p><input type="text" class="input-more-info" id="entrance" value="{{ autofill.entrance }}" placeholder="Подъезд*" ></p>
+                        {% else %}
+                            <p><input type="text" class="input-more-info" id="entrance" placeholder="Подъезд*" ></p>
+                        {% endif %}
+
+
+                        {% if autofill.floor != "-" %}
+                            <p><input type="text" class="input-more-info" id="floor" value="{{ autofill.floor }}" placeholder="Этаж*" ></p>
+                        {% else %}
+                            <p><input type="text" class="input-more-info" id="floor" placeholder="Этаж"></p>
+                        {% endif %}
+
+
+                        {% if autofill.apartment != "-" %}
+                            <p><input type="text" class="input-more-info" id="apartment" value="{{ autofill.apartment }}" placeholder="Квартира" ></p>
+                        {% else %}
+                            <p><input type="text" class="input-more-info" id="apartment" placeholder="Квартира"></p>
+                        {% endif %}                        
+
+
                         <h4>Дата доставки</h4>
-                        <p><input type="date" class="input-more-info" id="deliver"></p>
+                        <p><input type="text" class="input-more-info" id="deliver" readonly placeholder="__.__.____"></p>
                         <p>
                             <select  size="1" id="deliver_time">
                                 <option value="9:00 - 12:00">9:00 - 12:00</option>
@@ -96,10 +269,21 @@
                                 <option value="18:00 - 21:00">18:00 - 21:00</option>
                             </select>
                         </p>
+
                     
                         <h4>Комментарий</h4>
                         <p><textarea class="textarea-more-info" id="note"></textarea></p>
-                        <input type="hidden" id="user_id" value="{{ current_user.get_id() }}">
+                        {% if current_user.get_id() %}
+                            <input type="hidden" id="user_id" value="{{ current_user.get_id() }}">
+                            <div>
+                                <input id="saveData" type="checkbox" value="false">
+                                <label for="saveData"><p class="checker">Запомнить мои данные?</p></label>
+                            </div>    
+                        {% else %}
+                            <input type="hidden" id="user_id" value="None">
+                            <input type="hidden" value="false" id="saveData">
+                        {% endif %}
+
                         <p><div id="order_alert" class="flash"></div></p>
                         <button type="submit" class="btn-add-to-cart checkout">Оформить заказ</button>
                     </div>
@@ -108,14 +292,12 @@
         
         </form>  
         <div class="user-agreement">
-			<p>Нажимая на кнопку, вы даете <a class="glow-agreement" href="/agreement" target="_blank">согласие на обработку своих персональных данных</a></p>
+			<p>Нажимая на кнопку оформить заказ, вы даете <a class="glow-agreement" href="/agreement" target="_blank">согласие на обработку своих персональных данных</a></p>
 		</div>    
     </div>
-
 </nav>
-
 </div>
-{% endblock%}
+{% endblock %}
 <footer>
 	<div id="footer">
 		<div class="container">
@@ -173,41 +355,53 @@
     async defer>
 </script>
 
+<!-- air datatime picker calendar -->
+<script src="/static/js/air-datepicker.js"></script>
+<script>
+    new AirDatepicker('#deliver', {
+        autoClose: true,
+        buttons: ['clear'],
+        minDate: new Date(),    
+    });
+    
+</script>
+
+
+<!-- form -->
 <script>
 // fetch all product data from cart
 $(document).ready(function() {
-    for (let i = 0; i < productsInCart.length; i++) {
-
+    
         $('#order_form').on('submit', function(event) {
+        let product_id_parse = "";
+            let product_count_parse = "";
+            for (let i = 0; i < productsInCart.length; i++) {
+                product_id_parse += productsInCart[i].product_id + " ",
+                product_count_parse += productsInCart[i].product_count + " "}
             $.ajax({
-                async: false,
                 dataType: 'json',
                 data : 
-                    Object.assign({}, {
-                        product_id : productsInCart[i].product_id,
-                        product_count : productsInCart[i].product_count,
-                        }, 
-                        
-                        {
-                        name : $('#name').val(),
-                        phone : $('#phone').val(),
-                        mail : $('#mail').val(),
-                        secondary_name : $('#secondary_name').val(),
-                        secondary_phone : $('#secondary_phone').val(),
-                        city : $('#city').val(),
-                        street : $('#street').val(),
-                        building_address : $('#building_address').val(),
-                        entrance : $('#entrance').val(),
-                        floor : $('#floor').val(),
-                        apartment : $('#apartment').val(),
-                        deliver : $('#deliver').val(),
-                        deliver_time : $('#deliver_time').val(),
-                        note : $('#note').val(),
-                        }),
+                {
+                    product_id : product_id_parse,
+                    product_count : product_count_parse, 
+                    customer : $('#customer').val(),
+                    phone : $('#phone').val(),
+                    mail : $('#mail').val(),
+                    receiver : $('#receiver').val(),
+                    receiver_phone : $('#receiver_phone').val(),
+                    city : $('#city').val(),
+                    street : $('#street').val(),
+                    building_address : $('#building_address').val(),
+                    entrance : $('#entrance').val(),
+                    floor : $('#floor').val(),
+                    apartment : $('#apartment').val(),
+                    deliver : $('#deliver').val(),
+                    deliver_time : $('#deliver_time').val(),
+                    note : $('#note').val(),
+                    saveData : $('#saveData').val(),
+                },
                 type : 'POST',
                 url : '/user_purchase'
-
-
             })
             .done(function(data) {
                     $('#order_alert').text(data.content).show();
@@ -217,10 +411,91 @@ $(document).ready(function() {
             });
             event.preventDefault();
         });
-
-    }
 });
 
+</script>
+
+<!-- доработать через modal form -->
+<!-- <script>
+$(document).ready(function() {
+    $('#registration').on('submit', function(event) {
+        $.ajax({
+            data : {
+                name : $('#name').val(),
+                email : $('#email').val(),
+                password : $('#password').val(),
+                password1 : $('#password1').val(),
+            },
+            type : 'POST',
+            url : '/registration'
+        })
+        .done(function(data) {
+                $('#successAlert').text(data.content).show();
+                let successAlert = $('#successAlert');
+                successAlert.attr('class', data.category);
+        });
+
+        event.preventDefault();
+    });
+});
+</script> -->
+
+
+<!-- script for move element -->
+<script>
+// Сделайте элемент DIV перетаскиваемым:
+dragElement(document.getElementById("mydiv"));
+
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "body")) {
+    // если присутствует, заголовок - это место, откуда вы перемещаете DIV:
+    document.getElementById(elmnt.id + "body").onmousedown = dragMouseDown;
+  } else {
+    // в противном случае переместите DIV из любого места внутри DIV:
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // получить положение курсора мыши при запуске:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // вызов функции при каждом перемещении курсора:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // вычислить новую позицию курсора:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // установите новое положение элемента:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    // остановка перемещения при отпускании кнопки мыши:
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+</script>
+
+<script>
+$('#saveData').click(function() {
+  if ($(this).is(':checked')) {
+    $('#saveData').attr('value', true);
+  } else {
+    $('#saveData').attr('value', false);
+  }
+});
 </script>
 
 </html>

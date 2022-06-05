@@ -32,11 +32,11 @@
                 <tr>
                     <th data-checkbox="true"></th>
                     <th data-field="id" data-filter-control="input" data-sortable="true">id</th> 
-                    <th data-field="name" data-filter-control="input" data-sortable="true">name</th>
+                    <th data-field="customer" data-filter-control="input" data-sortable="true">customer</th>
                     <th data-field="phone" data-filter-control="input" data-sortable="true">phone</th>
                     <th data-field="mail" data-filter-control="input" data-sortable="true">mail</th>
-                    <th data-field="secondary_name" data-filter-control="input" data-sortable="true">secondary_name</th>
-                    <th data-field="secondary_phone" data-filter-control="input" data-sortable="true">secondary_phone</th>
+                    <th data-field="receiver" data-filter-control="input" data-sortable="true">receiver</th>
+                    <th data-field="receiver_phone" data-filter-control="input" data-sortable="true">receiver_phone</th>
                     <th data-field="city" data-filter-control="input" data-sortable="true">city</th>
                     <th data-field="street" data-filter-control="input" data-sortable="true">street</th>
                     <th data-field="building_adress" data-filter-control="input" data-sortable="true">building_address</th>
@@ -48,7 +48,8 @@
                     <th data-field="note" data-filter-control="input" data-sortable="true">note</th>
                     <th data-field="delivered" data-filter-control="input" data-sortable="true">delivered</th>
                     <th data-field="user_id" data-filter-control="input" data-sortable="true">user id</th>
-                    <th data-field="time" data-filter-control="input" data-sortable="true">product id</th>
+                    <th data-field="product_id" data-filter-control="input" data-sortable="true">product_id</th>      
+                    <th data-field="time" data-filter-control="input" data-sortable="true">order</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,11 +57,11 @@
                 <tr class="{{p.delivered}}">
                     <td class="bs-checkbox"><input value="{{p.id}}" type="checkbox"></td>
                     <td>{{p.id}}</td>
-                    <td>{{p.name}}</td>
+                    <td>{{p.customer}}</td>
                     <td>{{p.phone}}</td>
                     <td>{{p.mail}}</td>
-                    <td>{{p.secondary_name }}</td>
-                    <td>{{p.secondary_phone}}</td>
+                    <td>{{p.receiver }}</td>
+                    <td>{{p.receiver_phone}}</td>
                     <td>{{p.city}}</td>
                     <td>{{p.street }}</td>
                     <td>{{p.building_address }}</td>
@@ -72,7 +73,8 @@
                     <td>{{p.note }}</td>
                     <td>{{p.delivered }}</td>
                     <td>{{p.user_id }}</td>
-                    <td>{{p.time}}</td>
+                    <td>{{ p.product_id }}</td>
+                    <td>{{ p.time }}</td>
                 </tr>
             {% endfor%}
             </tbody>

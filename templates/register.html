@@ -16,19 +16,60 @@
     </p>
 
     <div id="login">
-        <form action="/register" method="post">
-            <fieldset class="clearfix">
-                {% for cat, msg in get_flashed_messages(True) %}
-                <div class="flash">{{msg}}</div>
-                {% endfor %}
+        <form action="/register" method="POST">
+        {{ form.hidden_tag() }}
+            <div>
+                {% if form.email.errors %}
+                    <span class="fontawesome-ban-circle"></span>{{ form.email(class="invalid") }}
+                <div class="invalid-feedback">
+                    {% for e in form.email.errors %}
+                    {{ e }}
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <span class="fontawesome-envelope-alt"></span>{{ form.email() }}  
+                {% endif %}
+            </div>
 
-                <p><span class="fontawesome-user"></span><input type="text" name="name" value="Логин" onBlur="if(this.value == '') this.value = 'Логин'" onFocus="if(this.value == 'Логин') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Username" -->
-                <p><span class="fontawesome-user"></span><input type="text" name="email" value="Почта" onBlur="if(this.value == '') this.value = 'Почта'" onFocus="if(this.value == 'Почта') this.value = ''" required></p>
-                <p><span class="fontawesome-lock"></span><input type="password" name="password" value="Пароль" onBlur="if(this.value == '') this.value = 'Пароль'" onFocus="if(this.value == 'Пароль') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
-                <p><span class="fontawesome-lock"></span><input type="password" name="password1" value="Пароль" onBlur="if(this.value == '') this.value = 'Пароль'" onFocus="if(this.value == 'Пароль') this.value = ''" required></p>
-                <p><input type="submit" value="ЗАРЕГИСТРИРОВАТЬСЯ"></p>
-                
-            </fieldset>
+            <div>
+                {% if form.name.errors %}
+                    <span class="fontawesome-ban-circle"></span>{{ form.name(class="invalid") }}
+                <div class="invalid-feedback">
+                    {% for e in form.name.errors %}
+                    {{ e }}
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <span class="fontawesome-user"></span>{{ form.name() }}  
+                {% endif %}
+            </div>
+            
+            <div>
+                {% if form.password.errors %}
+                    <span class="fontawesome-ban-circle"></span>{{ form.password(class="invalid") }}
+                <div class="invalid-feedback">
+                    {% for e in form.password.errors %}
+                    {{ e }}
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <span class="fontawesome-lock"></span>{{ form.password() }}  
+                {% endif %}
+            </div>
+
+            <div>
+                {% if form.password1.errors %}
+                    <span class="fontawesome-ban-circle"></span>{{ form.password1(class="invalid") }}
+                <div class="invalid-feedback">
+                    {% for e in form.password1.errors %}
+                    {{ e }}
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <span class="fontawesome-lock"></span>{{ form.password1() }}  
+                {% endif %}
+            </div>
+            <p>{{ form.submit() }}</p>
         </form>
         <p>Имеется аккаунт? &nbsp;&nbsp;<a href="/login">Войти</a><span class="fontawesome-arrow-right"></span></p>
     </div>

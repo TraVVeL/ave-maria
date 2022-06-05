@@ -37,7 +37,8 @@ const parentElement = document.querySelector('#buyItems');
 const cartSumPrice = document.querySelector('#sum-prices');
 const quantityItem = document.querySelector('#quantity');
 const products = document.querySelectorAll('.el-container');
-console.log(productsInCart)
+console.log(typeof productsInCart)
+console.log(...productsInCart)
 
 const countTheSumPrice = function () 
     {
@@ -131,7 +132,6 @@ products.forEach(item => {   // 1
             const productPrice = item.querySelector('.priceValue').innerHTML;
             const productUrl = item.querySelector('.url_name').href;
             const productImg = item.querySelector('.el-img-front').src;
-            const user_id = item.querySelector('#user_id').value;
             let product = {
                 product_name: productName,
                 product_id: productID,
@@ -140,7 +140,6 @@ products.forEach(item => {   // 1
                 product_price: +productPrice,
                 product_url: productUrl, 
                 product_img: productImg,
-                user_id: user_id
             }
             updateProductsInCart(product);
             updateShoppingCartHTML();

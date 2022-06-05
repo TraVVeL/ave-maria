@@ -66,8 +66,9 @@ h1 {
 .clearfix:after { clear: both; }
 
 #login {
-	margin: 100px auto;
-	width: 280px;
+	margin: 0 auto;
+	width: 300px;
+	margin-top: 130px;
 }
 
 
@@ -86,7 +87,7 @@ h1 {
 }
 
 #login form input {
-	height: 50px;
+	height: 48px;
 	outline:none;
 }
 
@@ -143,4 +144,21 @@ h1 {
     background-color: #483b43;
     border-radius: 3px;
     margin-bottom: 20px;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+    transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+.field {
+	border: 1px solid rgba(59, 65, 72, 1);
+}
+
+.invalid {
+	border: 1px solid rgba(255, 0, 0, 0.30);
+}
+
+.invalid-feedback {
+	margin-bottom: 1em;
 }

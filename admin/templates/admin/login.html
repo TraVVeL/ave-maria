@@ -14,14 +14,18 @@
 <p class="title-title">Admin panel
     <div id="login">
         <form action="" method="post">
-            <fieldset class="clearfix">
+
                 {% for cat, msg in get_flashed_messages(True) %}
                 <div class="flash {{cat}}">{{msg}}</div>
                 {% endfor %}
-                <p><span class="fontawesome-user"></span><input class="input" type="text" name="user" value="Логин" onBlur="if(this.value == '') this.value = 'Логин'" onFocus="if(this.value == 'Логин') this.value = ''" required></p>
-                <p><span class="fontawesome-lock"></span><input type="password" name="password"  value="Пароль" onBlur="if(this.value == '') this.value = 'Пароль'" onFocus="if(this.value == 'Пароль') this.value = ''" required></p>
+                <p><span class="fontawesome-user"></span>
+                    <input class="field" type="text" name="user" placeholder="Логин" required>
+                </p>
+                <p>
+                    <span class="fontawesome-lock"></span>
+                    <input class="field" type="password" name="password" placeholder="******" required>
+                </p>
                 <p><input type="submit" value="ВОЙТИ"></p>
-            </fieldset>
         </form>
     </div>
 </body>

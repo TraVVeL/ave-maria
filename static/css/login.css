@@ -68,8 +68,9 @@ h1 {
 /* ---------- LOGIN ---------- */
 
 #login {
-	margin: 100px auto;
-	width: 280px;
+	margin: 0 auto;
+	width: 300px;
+	margin-top: 130px;
 }
 
 #login form span {
@@ -87,7 +88,7 @@ h1 {
 }
 
 #login form input {
-	height: 50px;
+	height: 48px;
 	outline:none;
 }
 
@@ -98,8 +99,7 @@ h1 {
 	-webkit-border-radius: 0px 3px 3px 0px;
 	color: #606468;
 	margin-bottom: 1em;
-	padding: 0 16px;
-	width: 198px;
+	padding: 0 30px;
 }
 
 #login form input:focus {
@@ -217,7 +217,7 @@ input[type="radio"]:checked + label,
 input[type="radio"]:not(:checked) + label {
     display: inline-block;
     position: relative;
-    padding-left: 28px;
+    padding-left: 50px;
     line-height: 20px;
     cursor: pointer;
 }
@@ -297,8 +297,8 @@ input[type="radio"]:checked + label:after {
     background-color: #3b4148;
     border-radius: 0px 3px 3px 0px;
     margin-bottom: 1em;
-    padding: 0 16px;
-    width: 220px;
+    padding: 0 30px;
+    width: 172px;
     height: 34px;
     text-align: left;
     padding-top: 16px;
@@ -322,6 +322,20 @@ input[type="radio"]:checked + label:after {
   color: indianred;
 }
 
-#login form input[type="text"] {
-	border: 0px;
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+    transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+.field {
+	border: 1px solid rgba(59, 65, 72, 1);
+}
+
+.invalid {
+	border: 1px solid rgba(255, 0, 0, 0.30);
+}
+
+.invalid-feedback {
+	margin-bottom: 1em;
 }
